@@ -1,0 +1,26 @@
+import java.awt.*;
+
+/**
+ * The StayFocused class is a public class able to create a FocusTimer- object and start
+ * the program this way.
+ * The other classes are protected to encapsulate them.
+ */
+public class StayFocused {
+    /**
+     * The main- function creates a FocusTimer object and starts a thread with it.
+     * @param args
+     */
+    public static void main(String args[]){
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    FocusTimer timer = new FocusTimer();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+}
+
+
