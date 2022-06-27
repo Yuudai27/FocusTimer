@@ -1,0 +1,213 @@
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
+/**
+ * The TimerDesign- class extends the JFrame- class abd provides a GUI for
+ * the program and the necessary functions to interact with the GUI.
+ */
+public class TimerDesign extends JFrame {
+
+    private JPanel contentPane;
+    private JTextField repeatTimes, focusTime, breakTime;
+    private JLabel timerOne, timerTwo, timerThree, timerFour, timerFive;
+    JComboBox timerChoice;
+    protected int playMode = 0;
+
+    /**
+     * Creates the frame with its GUI- objects.
+     */
+    public TimerDesign() {
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 450, 300);
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(contentPane);
+        contentPane.setLayout(null);
+        contentPane.setBackground(Color.white);
+
+        repeatTimes = new JTextField();
+        repeatTimes.setText("");
+        repeatTimes.setBounds(86, 11, 40, 20);
+        repeatTimes.setHorizontalAlignment(JTextField.CENTER);
+        contentPane.add(repeatTimes);
+        repeatTimes.setColumns(10);
+
+        JLabel timesLabel = new JLabel("rounds");
+        timesLabel.setBounds(86, 31, 46, 14);
+        contentPane.add(timesLabel);
+
+        focusTime = new JTextField();
+        focusTime.setText("");
+        focusTime.setBounds(221,11,40,20);
+        focusTime.setHorizontalAlignment(JTextField.CENTER);
+        contentPane.add(focusTime);
+        focusTime.setColumns(10);
+
+        JLabel focusLabel = new JLabel("minutes focus");
+        focusLabel.setBounds(201, 31, 90, 14);
+        contentPane.add(focusLabel);
+
+        breakTime = new JTextField();
+        breakTime.setText("");
+        breakTime.setBounds(351,11,40,20);
+        breakTime.setHorizontalAlignment(JTextField.CENTER);
+        contentPane.add(breakTime);
+        breakTime.setColumns(10);
+
+        JLabel breakLabel = new JLabel("minutes break");
+        breakLabel.setBounds(331, 31, 90, 14);
+        contentPane.add(breakLabel);
+
+        timerOne = new JLabel("0", SwingConstants.CENTER);
+        timerOne.setBounds(49, 64, 70, 90);
+        timerOne.setFont(new Font("Serif", Font.BOLD, 100));
+        contentPane.add(timerOne);
+
+        timerTwo = new JLabel("0", SwingConstants.CENTER);
+        timerTwo.setBounds(129, 64, 70, 90);
+        timerTwo.setFont(new Font("Serif", Font.BOLD, 100));
+        contentPane.add(timerTwo);
+
+        timerThree = new JLabel(":", SwingConstants.CENTER);
+        timerThree.setBounds(209, 64, 35, 90);
+        timerThree.setFont(new Font("Serif", Font.BOLD, 80));
+        contentPane.add(timerThree);
+
+        timerFour = new JLabel("0", SwingConstants.CENTER);
+        timerFour.setBounds(249, 64, 70, 90);
+        timerFour.setFont(new Font("Serif", Font.BOLD, 100));
+        contentPane.add(timerFour);
+
+        timerFive = new JLabel("0", SwingConstants.CENTER);
+        timerFive.setBounds(329, 64, 70, 90);
+        timerFive.setFont(new Font("Serif", Font.BOLD, 100));
+        contentPane.add(timerFive);
+        /**The playButton can invoke a function to set the playMode to 1,
+        to start the timer**/
+        JButton playButton = new JButton("►");
+        playButton.setBounds(36, 190, 109, 52);
+        playButton.setFont(new Font("Arial", Font.BOLD, 40));
+        playButton.setBorder(BorderFactory.createEmptyBorder());
+        playButton.setBackground(Color.white);
+        contentPane.add(playButton);
+        playButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playMode = 1;
+            }
+        });
+        /**The pauseButton can invoke a function to set the playMode to 2,
+        to pause the timer**/
+        JButton pauseButton = new JButton("║");
+        pauseButton.setBounds(171, 190, 109, 52);
+        pauseButton.setFont(new Font("Arial", Font.BOLD, 30));
+        pauseButton.setBorder(BorderFactory.createEmptyBorder());
+        pauseButton.setBackground(Color.white);
+        contentPane.add(pauseButton);
+        pauseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playMode = 2;
+            }
+        });
+        /**The stopButton can invoke a function to set the playMode to 3,
+         to stop the timer**/
+        JButton stopButton = new JButton("■");
+        stopButton.setBounds(303, 185, 109, 52);
+        stopButton.setFont(new Font("Arial", Font.BOLD, 50));
+        stopButton.setBorder(BorderFactory.createEmptyBorder());
+        stopButton.setBackground(Color.white);
+        contentPane.add(stopButton);
+        stopButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playMode = 3;
+            }
+        });
+    }
+
+    /**
+     * The getTime()- function has not parameters and will return an integer array with two values.
+     * result[0] includes the amount of focus time.
+     * result[1] includes the amount of break time.
+     * @return Returns an integer array with the amount of focus time and break time inserted.
+     */
+    protected int[] getTime(){
+        int[] result = {0,0};
+        try {
+            result[0] = Integer.valueOf(focusTime.getText()) * 60;
+            result[1] = Integer.valueOf(breakTime.getText()) * 60;
+        }
+        catch(IllegalArgumentException e){
+            JOptionPane.showMessageDialog(null, "The timer input is not a number!", "Input error", JOptionPane.INFORMATION_MESSAGE);
+        }
+        return result;
+    }
+    /**
+     * The getRounds()- function has not parameters and will return an integer array with the
+     * number of rounds inserted.
+     * @return Returns an integer with the number of rounds inserted.
+     */
+    protected int getRounds(){
+        int result = 0;
+        try {
+            result = Integer.valueOf(repeatTimes.getText());
+        }
+        catch(IllegalArgumentException e){
+            JOptionPane.showMessageDialog(null, "The round input is not a number!", "Input error", JOptionPane.INFORMATION_MESSAGE);
+        }
+        return result;
+    }
+
+    /**
+     * The changeColor()- function takes the parameter mode, which states if the timer is for focus or break time.
+     * Depending on the value the digits will be painted in black or green.
+      * @param mode takes an integer value, which states if the current timer is a focus or break timer.
+     */
+    protected void changeColor(int mode){
+        if(mode == 0){
+            timerOne.setForeground(Color.black);
+            timerTwo.setForeground(Color.black);
+            timerFour.setForeground(Color.black);
+            timerFive.setForeground(Color.black);
+        }
+        else{
+            timerOne.setForeground(Color.green);
+            timerTwo.setForeground(Color.green);
+            timerFour.setForeground(Color.green);
+            timerFive.setForeground(Color.green);
+        }
+    }
+
+    /**
+     * The updateTimer()- function takes a string- array as parameter,
+     * which contains the strings for each digit of timer design.
+     * @param digits takes the values of a string array, which contains the
+     *               values for the timer digits.
+     */
+    protected void updateTimer(String[] digits){
+        timerOne.setText(digits[0]);
+        timerTwo.setText(digits[1]);
+        timerFour.setText(digits[2]);
+        timerFive.setText(digits[3]);
+        this.revalidate();
+        this.repaint();
+    }
+
+    /**
+     * The getPlayMode()- function returns the current state of the playMode.
+     * @return It returns the current state of the playMode.
+     */
+    protected int getPlayMode(){
+        return playMode;
+    }
+
+    /**
+     * The resetPlayMode()- functions sets the playMode back to 0.
+      */
+    protected void resetPlayMode(){playMode = 0;}
+}
