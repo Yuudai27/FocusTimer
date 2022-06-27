@@ -1,0 +1,155 @@
+import javax.swing.*;
+import java.util.Date;
+
+import static java.lang.Thread.*;
+
+/**
+ * The FocusTimer- class create a GUI with the TimerDesign object and starts
+ * a timer running down depending on the inserted values.
+ */
+public class FocusTimer  {
+    private int timeCount = 0;
+    protected TimerDesign frame;
+    private long timeOne = 0, timeTwo = 0;
+    Date timer;
+
+    /**
+     * The FocusTimer constructor has no parameter initializes a new TimerDesign() for the variable frame.
+     * It also starts an own thread for the startTimer()- function, that it runs separately from the thread
+     * of frame.
+     * @throws Exception The constructor throws and exception in case a InterruptedException comes up.
+     */
+    protected FocusTimer() throws Exception {
+        try{
+            frame = new TimerDesign();
+            frame.setVisible(true);
+            new Thread() {
+                public void run() {
+                    try {
+                        startTimer();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * The startTimer() function doesn't take any parameters.
+     * First it checks the condition if the playMode is equal to 0, which means it isn't started, stopped or paused.
+     * As long as it is true the timer, will continue counting down the time.
+     * The second condition checks, if the playMode is not equal to 1, which means it isn't started.
+     * As long as it isn't started, it will put the thread including the timer to sleep.
+     * After the timer started, it will start a for loop, which runs as long as the inserted
+     * rounds are reached.
+     * Followed by another loop, which runs as long as the timer count is bigger or equal to 0.
+     * With timeOne the current time will be assigned, as well for timeTwo. As long as there
+     * is less than 1 second different, it will continue getting the recent time for timeTwo.
+     * In the next step the color of the digits will be chosen depending on, if its focus or break time.
+     * The current timeCount gets broken down into the different digits for the timer design.
+     * The last check of the loop, tests if playMode is equal to 3 (stop mode).
+     * @throws InterruptedException
+     */
+    protected void startTimer() throws InterruptedException {
+        boolean changed = false;
+        //checks if the timer is still running
+        while (frame.getPlayMode() == 0) {
+            //checks if the timer is paused
+            while (frame.getPlayMode() != 1) {
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            //the for- loop iterates through the rounds written down in the GUI
+            for (int rounds = 0; rounds < frame.getRounds(); rounds++) {
+                int[] timerInput = frame.getTime();
+                /**this for- loop takes to rounds, as it first runs down the focus time, then the break time
+                until it will continue with the next round**/
+                for (int timeIndex = 0; timeIndex < 2; timeIndex++) {
+                    //the timeCount get assigned the value of the timerInput (if 0 it is the focus time, if 1 it is the break time)
+                    timeCount = timerInput[timeIndex];
+                    //timeOne gets the current time assigned
+                    timer = new Date();
+                    timeOne = timer.getTime() / 1000;
+                    String[] result = {"0", "0", "0", "0"};
+                    //As long as the timeCount is still bigger or equal to 0, the loop will iterate.
+                    while (timeCount >= 0) {
+                        /**checks if playMode is equal to 2 (timer is paused)
+                        as long as its paused, it will put the timer to sleep**/
+                        while (frame.getPlayMode() == 2) {
+                            try {
+                                Thread.sleep(20);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        //timeTwo get the current time assigned
+                        timer = new Date();
+                        timeTwo = timer.getTime() / 1000;
+                        /**checks if already 1 sec passed between timeOne and timeTwo,
+                        if not it will keep on getting the current time until 1 second
+                        has passed**/
+                        while (timeTwo - timeOne < 1) {
+                            timer = new Date();
+                            timeTwo = timer.getTime() / 1000;
+                        }
+                        /**this condition checks if the color of the time still fits,
+                        as the focus time is written in black and the break time in green**/
+                        if(!changed){
+                            frame.changeColor(timeIndex);
+                            changed = true;
+                        }
+                        //value of timeOne gets refreshed
+                        timeOne = timer.getTime() / 1000;
+                        /**the following conditions breaking the timeCount value into single digits
+                        the timer design**/
+                        if (timeCount / 60 > 9)
+                            result[0] = String.valueOf(timeCount / 60 / 10);
+                        else
+                            result[0] = "0";
+                        if (timeCount / 60 > 0)
+                            result[1] = String.valueOf((timeCount / 60) % 10);
+                        else
+                            result[1] = "0";
+                        if (timeCount % 60 > 9)
+                            result[2] = String.valueOf((timeCount % 60) / 10);
+                        else
+                            result[2] = "0";
+                        if (timeCount > 0)
+                            result[3] = String.valueOf((timeCount % 60) % 10);
+                        else
+                            result[3] = "0";
+                        //the updateTimer functions update the digits of the timer design
+                        frame.updateTimer(result);
+                        timeCount--;
+                        /**check if playMode is equal to 3, if so, it will stop the timer
+                        and break out of the loop**/
+                        if (frame.getPlayMode() == 3) {
+                            String[] reset = {"0", "0", "0", "0"};
+                            frame.updateTimer(reset);
+                            frame.changeColor(0);
+                            break;
+                        }
+                    }
+                    //set changed to false again, to repaint the color of the digits later
+                    changed = false;
+                    //breaks the loop, if it is stopped
+                    if (frame.getPlayMode() == 3) {
+                        break;
+                    }
+                }
+                //breaks the loop, if it is stopped
+                if (frame.getPlayMode() == 3) {
+                    break;
+                }
+            }
+            //the stop mode gets resetted, so that a new timer can be started
+            frame.resetPlayMode();
+        }
+    }
+}
